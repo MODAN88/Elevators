@@ -1,3 +1,25 @@
+/**
+ * Elevator Class - Core elevator logic and state management
+ * 
+ * Responsibilities:
+ * - Maintains elevator state (position, direction, status)
+ * - Manages floor queue with optimal routing
+ * - Handles door operations and arrival sequence
+ * - Executes smooth movement simulation
+ * 
+ * Movement Physics:
+ * - Speed: configurable floors/second (default: 1 floor/s)
+ * - Updates: 50ms intervals (20 FPS)
+ * - Position: fractional floors for smooth animation
+ * 
+ * Arrival Sequence:
+ * 1. DOORS_OPENING (doorTime/4 = 250ms)
+ * 2. DOORS_OPEN (doorTime/2 = 500ms)
+ * 3. DOORS_CLOSING (doorTime/4 = 250ms)
+ * 4. ARRIVED (2000ms wait)
+ * 5. IDLE or next MOVING state
+ */
+
 import { ElevatorState, ElevatorStatus, Direction, ElevatorRequest } from './types';
 
 export class Elevator {
@@ -8,10 +30,17 @@ export class Elevator {
     public direction: Direction = Direction.NONE;
     public queue: number[] = [];
     public doorOpen: boolean = false;
-    private speed: number; // floors per second
-    private doorTime: number; // milliseconds
+    private speed: number;
+    private doorTime: number;
     private arrivalCallback?: (elevatorId: number, floor: number) => void;
 
+    /**
+     * Initialize elevator instance
+     * @param id - Unique elevator identifier (0-based)
+     * @param initialFloor - Starting floor position (default: 0)
+     * @param speed - Travel speed in floors/second (default: 1)
+     * @param doorTime - Door operation base time in ms (default: 2000)
+     */
     constructor(id: number, initialFloor: number = 0, speed: number = 1, doorTime: number = 2000) {
         this.id = id;
         this.currentFloor = initialFloor;
@@ -19,10 +48,19 @@ export class Elevator {
         this.doorTime = doorTime;
     }
 
+    /**
+     * Register callback for arrival notifications
+     * Used to trigger sound effects and broadcast arrival events
+     * @param callback - Function to call on arrival (elevatorId, floor)
+     */
     public setArrivalCallback(callback: (elevatorId: number, floor: number) => void): void {
         this.arrivalCallback = callback;
     }
 
+    /**
+     * Get current elevator state snapshot
+     * @returns Complete ElevatorState object for WebSocket broadcast
+     */
     public getState(): ElevatorState {
         return {
             id: this.id,

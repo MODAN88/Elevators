@@ -1,3 +1,25 @@
+/**
+ * Main Application Component
+ * 
+ * State Management:
+ * - elevators: Real-time state from WebSocket (100ms updates)
+ * - config: Building configuration (elevators, floors, speed)
+ * - arrivals: Recent arrival events for analytics and UI feedback
+ * - ws: WebSocket connection for real-time communication
+ * 
+ * Features:
+ * - Initial configuration dialog on first load
+ * - Real-time elevator visualization
+ * - Sound notifications on arrivals
+ * - Configuration updates without page reload
+ * - Automatic reconnection on config changes
+ * 
+ * Architecture:
+ * - React hooks for state management
+ * - WebSocket for real-time updates
+ * - REST API for commands and configuration
+ */
+
 import { useState, useEffect } from 'react';
 import { api } from './api';
 import { ElevatorState, BuildingConfig, Direction, ArrivalEvent } from './types';
@@ -13,6 +35,8 @@ function App() {
   const [tempElevators, setTempElevators] = useState(5);
   const [tempFloors, setTempFloors] = useState(10);
   const [arrivals, setArrivals] = useState<ArrivalEvent[]>([]);
+  
+  /** Audio element for arrival notifications (beep sound) */
   const [arrivalSound] = useState(() => {
     const audio = new Audio();
     audio.src = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTcIGWi77eefTRAMUKfj8LZjHAY4ktfzzHksBSR3yPDekEALFF605+qnVRUJRZ/h8r9rIQYsgc7y2Ik3CBlpvO3nn00QDFA';
@@ -20,6 +44,13 @@ function App() {
     return audio;
   });
 
+  /**
+   * Initial setup effect
+   * - Fetches building configuration
+   * - Establishes WebSocket connection
+   * - Sets up arrival sound handling
+   * - Polls for recent arrivals (10ms intervals)
+   */
   useEffect(() => {
     api.getConfig().then(cfg => {
       setConfig(cfg);
@@ -44,7 +75,6 @@ function App() {
           arrivalSound.play().catch(err => console.log('Audio play failed:', err));
         }
       } catch (e) {
-        // Ignore non-JSON messages
       }
     });
 

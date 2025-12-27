@@ -1,3 +1,27 @@
+/**
+ * Individual Elevator Display Component
+ * 
+ * Features:
+ * - Real-time position and status display
+ * - Floor selection buttons with visual feedback
+ * - Arrival time display (shown for 2 seconds)
+ * - Queue visualization
+ * - Door animation indicator
+ * - Estimated time to target floor
+ * 
+ * Visual States:
+ * - IDLE: Black (#333)
+ * - MOVING: Blue (#2196F3)
+ * - DOORS: Orange (#FF9800)
+ * - ARRIVED: Green (#4CAF50) with animation
+ * 
+ * Props:
+ * - elevator: Current elevator state
+ * - numFloors: Total building floors
+ * - onSelectFloor: Callback for floor selection
+ * - arrivals: Recent arrival events for time display
+ */
+
 import React from 'react';
 import { ElevatorState, Direction, ArrivalEvent } from '../types';
 import './Elevator.css';
@@ -12,6 +36,10 @@ interface ElevatorProps {
 const Elevator: React.FC<ElevatorProps> = ({ elevator, numFloors, onSelectFloor, arrivals }) => {
   const [selectedFloor, setSelectedFloor] = React.useState<number | null>(null);
 
+  /**
+   * Find most recent arrival for this elevator (within 2 seconds)
+   * @returns ArrivalEvent or undefined
+   */
   const getLastArrival = () => {
     const recentArrival = arrivals.find(
       a => a.elevatorId === elevator.id && 
@@ -20,6 +48,11 @@ const Elevator: React.FC<ElevatorProps> = ({ elevator, numFloors, onSelectFloor,
     return recentArrival;
   };
 
+  /**
+   * Calculate estimated time to reach target floor
+   * Formula: distance * 2 + queue_length * 3
+   * @returns Estimated seconds or null if no target
+   */
   const getEstimatedTime = () => {
     if (!elevator.targetFloor) return null;
     const distance = Math.abs(elevator.targetFloor - elevator.currentFloor);

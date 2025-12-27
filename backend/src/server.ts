@@ -1,3 +1,18 @@
+/**
+ * Elevator System Backend Server
+ * 
+ * Architecture:
+ * - Express REST API for configuration and commands
+ * - WebSocket for real-time state broadcasts (100ms intervals)
+ * - ElevatorController manages elevator logic and allocation
+ * 
+ * Features:
+ * - Intelligent elevator selection algorithm (idle priority)
+ * - Real-time state synchronization
+ * - Sound notification on arrivals
+ * - Wait time tracking and analytics
+ */
+
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import { WebSocketServer, WebSocket } from 'ws';
@@ -8,17 +23,19 @@ import http from 'http';
 const app: Express = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Default Configuration
+/**
+ * Default building configuration
+ * Optimized for balanced performance and realistic simulation
+ */
 let buildingConfig: BuildingConfig = {
     numElevators: 5,
     numFloors: 10,
-    floorHeight: 3, // meters
-    elevatorSpeed: 1, // floors per second
-    doorTime: 1000 // milliseconds (improved from 2000)
+    floorHeight: 3,
+    elevatorSpeed: 1,
+    doorTime: 1000
 };
 
 // Initialize elevator controller
