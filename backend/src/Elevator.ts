@@ -29,7 +29,6 @@ export class Elevator {
     public status: ElevatorStatus = ElevatorStatus.IDLE;
     public direction: Direction = Direction.NONE;
     public queue: number[] = [];
-    public doorOpen: boolean = false;
     private speed: number;
     private doorTime: number;
     private arrivalCallback?: (elevatorId: number, floor: number) => void;
@@ -68,8 +67,7 @@ export class Elevator {
             targetFloor: this.targetFloor,
             status: this.status,
             direction: this.direction,
-            queue: [...this.queue],
-            doorOpen: this.doorOpen
+            queue: [...this.queue]
         };
     }
 
@@ -171,20 +169,17 @@ export class Elevator {
         this.currentFloor = floor;
         this.targetFloor = null;
         this.status = ElevatorStatus.DOORS_OPENING;
-        this.doorOpen = false;
 
         if (this.arrivalCallback) {
             this.arrivalCallback(this.id, floor);
         }
 
         setTimeout(() => {
-            this.doorOpen = true;
             this.status = ElevatorStatus.DOORS_OPEN;
 
             setTimeout(() => {
                 this.status = ElevatorStatus.DOORS_CLOSING;
                 setTimeout(() => {
-                    this.doorOpen = false;
                     this.status = ElevatorStatus.ARRIVED;
 
                     setTimeout(() => {

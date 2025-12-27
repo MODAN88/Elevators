@@ -155,11 +155,6 @@ const Elevator: React.FC<ElevatorProps> = ({ elevator, numFloors, onSelectFloor,
           );
         })}
       </div>
-
-      <div className={`door-indicator ${elevator.doorOpen ? 'open' : 'closed'}`}>
-        <div className="door door-left"></div>
-        <div className="door door-right"></div>
-      </div>
     </div>
   );
 };

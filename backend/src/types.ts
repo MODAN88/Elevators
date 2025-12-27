@@ -79,8 +79,6 @@ export interface ElevatorState {
     direction: Direction;
     /** Pending floor requests in optimal order */
     queue: number[];
-    /** Door state (true = open, false = closed) */
-    doorOpen: boolean;
 }
 
 /**

@@ -244,38 +244,3 @@
         transform: scale(1.1);
     }
 }
-
-.door-indicator {
-    height: 60px;
-    background: #333;
-    border-radius: 6px;
-    position: relative;
-    overflow: hidden;
-}
-
-.door {
-    position: absolute;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    background: #666;
-    transition: transform 0.5s;
-}
-
-.door-left {
-    left: 0;
-    border-right: 2px solid #333;
-}
-
-.door-right {
-    right: 0;
-    border-left: 2px solid #333;
-}
-
-.door-indicator.open .door-left {
-    transform: translateX(-100%);
-}
-
-.door-indicator.open .door-right {
-    transform: translateX(100%);
-}

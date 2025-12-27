@@ -21,7 +21,6 @@ export interface ElevatorState {
     status: ElevatorStatus;
     direction: Direction;
     queue: number[];
-    doorOpen: boolean;
 }
 
 export interface BuildingConfig {
